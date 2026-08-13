@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Localfest Makassar 2026 — Pembayaran Pending</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<style>
+  :root {
+    --wine-900: #2A0608; --wine-800: #4A0E12; --wine-700: #6B1414;
+    --gold-500: #C9A961; --gold-400: #D4AF37; --gold-300: #E4C77A;
+    --cream: #FAF6F0; --ivory: #FFFBF3; --charcoal: #1A1413;
+    --gray-500: #7A6E6B; --gray-300: #D6CFC9; --gray-100: #F0EBE4;
+    --white: #FFFFFF; --warning: #F59E0B; --warning-dark: #D97706;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--wine-900); color: var(--ivory); padding-bottom: 100px; -webkit-font-smoothing: antialiased; min-height: 100vh; position: relative; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(900px circle at 10% 10%, rgba(245, 158, 11, 0.18), transparent 50%), radial-gradient(700px circle at 90% 20%, rgba(107, 20, 20, 0.4), transparent 50%); z-index: -2; }
+  
+  .topbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; background: rgba(42, 6, 8, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(201, 169, 97, 0.2); position: sticky; top: 0; z-index: 100; }
+  .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-img { width: 34px; height: 34px; border-radius: 9px; object-fit: cover; }
+  .logo-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--ivory); }
+  .logo-text span { color: var(--gold-500); }
+  .topbar-chip { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 999px; font-size: 11px; font-weight: 600; color: #FCD34D; }
+
+  .container { max-width: 600px; margin: auto; padding: 20px; }
+  .pending-hero { text-align: center; padding: 36px 20px 18px; animation: fadeUp 0.7s ease backwards; }
+  .pending-icon-wrap { width: 92px; height: 92px; background: linear-gradient(135deg, var(--warning), var(--warning-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; position: relative; box-shadow: 0 12px 40px rgba(245, 158, 11, 0.4); }
+  .pending-icon-wrap i { font-size: 42px; color: #fff; }
+  .pending-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 999px; font-size: 11px; font-weight: 700; color: #FCD34D; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+  .pending-hero h1 { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: var(--ivory); margin-bottom: 10px; }
+  .pending-hero h1 .grad { background: linear-gradient(135deg, var(--warning), var(--gold-500)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .pending-hero p { font-size: 14px; color: #D1D5DB; line-height: 1.6; max-width: 380px; margin: 0 auto; }
+
+  .alert-box { margin-top: 22px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(107, 20, 20, 0.05)); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 16px; padding: 18px; position: relative; overflow: hidden; }
+  .alert-box::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, var(--warning), var(--wine-700)); }
+  .alert-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: #FEF3C7; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .alert-body { font-size: 13px; color: #D1D5DB; line-height: 1.65; }
+  .alert-body strong { color: #FCD34D; }
+
+  .ticket-card { background: var(--white); border-radius: 22px; margin-top: 22px; overflow: hidden; box-shadow: 0 30px 60px -15px rgba(0,0,0,0.5); position: relative; color: var(--charcoal); }
+  .ticket-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--warning), var(--gold-500)); z-index: 2; }
+  .ticket-header { background: var(--wine-900); padding: 20px 24px; color: var(--ivory); display: flex; justify-content: space-between; align-items: center; }
+  .ticket-header h2 { font-family: 'Playfair Display', serif; font-size: 20px; }
+  .ticket-header .status { background: var(--warning); padding: 6px 14px; border-radius: 999px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+  
+  .banner-wrap { position: relative; overflow: hidden; }
+  .event-banner-img { width: 100%; height: 160px; object-fit: cover; filter: saturate(0.8) brightness(0.8); }
+  .banner-watermark { position: absolute; bottom: 14px; right: 14px; font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 800; color: rgba(255, 255, 255, 0.8); background: rgba(245, 158, 11, 0.9); padding: 4px 12px; border-radius: 6px; transform: rotate(-4deg); }
+  
+  .ticket-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 24px; }
+  .info-item { font-size: 10px; color: var(--gray-500); text-transform: uppercase; }
+  .info-item span { display: block; font-size: 14px; color: var(--charcoal); font-weight: 700; margin-top: 4px; text-transform: none; font-family: 'Playfair Display', serif; }
+
+  .qr-section { text-align: center; padding: 16px 24px 28px; background: linear-gradient(180deg, #FAFAFB, #fff); border-top: 2px dashed var(--gray-300); }
+  .qr-frame { display: inline-block; padding: 14px; background: #fff; border-radius: 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); position: relative; margin-bottom: 14px; }
+  .qr-section img { width: 150px; height: 150px; filter: grayscale(1) opacity(0.3); }
+  .qr-lock-overlay { position: absolute; inset: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+  .qr-lock-overlay i { font-size: 32px; color: var(--warning-dark); }
+  .qr-lock-overlay span { font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 700; color: var(--warning-dark); text-transform: uppercase; }
+
+  .bottom { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(42, 6, 8, 0.9); backdrop-filter: blur(20px); padding: 14px 20px; border-top: 1px solid rgba(201, 169, 97, 0.2); z-index: 100; }
+  .bottom-row { max-width: 600px; margin: auto; display: flex; gap: 10px; }
+  .btn { flex: 1; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 16px; border: none; border-radius: 14px; font-size: 14px; font-weight: 800; cursor: pointer; text-decoration: none; text-transform: uppercase; }
+  .btn-primary { background: linear-gradient(135deg, var(--gold-400), var(--gold-500)); color: var(--wine-900); box-shadow: 0 8px 24px rgba(201, 169, 97, 0.4); }
+  .btn-secondary { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--ivory); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 480px) { .ticket-info-grid { grid-template-columns: 1fr; } .topbar-chip { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="logo-wrap"><img src="logo.png" alt="LOCALEST" class="logo-img"><span class="logo-text">LOCAL<span>FEST</span></span></a>
+  <div class="topbar-chip"><i class="fa-solid fa-triangle-exclamation"></i> Pending</div>
+</div>
+
+<div class="container">
+  <div class="pending-hero">
+    <div class="pending-icon-wrap"><i class="fa-solid fa-clock"></i></div>
+    <div class="pending-badge"><i class="fa-solid fa-circle"></i> Pembayaran Pending</div>
+    <h1>Pembayaran <span class="grad">Tertunda</span></h1>
+    <p>Transaksi QRIS belum dapat diselesaikan karena telah mencapai batas limit. Jangan khawatir, dana Anda yang sempat terpotong akan dikembalikan otomatis.</p>
+  </div>
+
+  <div class="alert-box">
+    <div class="alert-title"><i class="fa-solid fa-circle-exclamation"></i> Informasi Pengembalian Dana</div>
+    <div class="alert-body">Pembayaran via <strong>QRIS</strong> tidak dapat diproses karena telah mencapai <strong>batas limit transaksi</strong>. Dana yang sempat terpotong akan dikembalikan secara otomatis ke metode pembayaran asli Anda dalam waktu <strong>1×24 Jam</strong> kerja. Pastikan untuk memeriksa mutasi rekening Anda.</div>
+  </div>
+
+  <div class="ticket-card">
+    <div class="ticket-header">
+      <h2>Localfest Makassar 2026</h2>
+      <div class="status">Pending</div>
+    </div>
+    <div class="banner-wrap">
+      <img src="banner.png" alt="Banner Localfest" class="event-banner-img">
+      <div class="banner-watermark">Pending</div>
+    </div>
+    <div class="ticket-info-grid">
+      <div class="info-item">Order ID<span id="orderId">-</span></div>
+      <div class="info-item">Nama Pemesan<span id="namaPemesan">-</span></div>
+      <div class="info-item">Kategori Tiket<span id="jenisTiket">-</span></div>
+      <div class="info-item">Jumlah Tiket<span id="jumlahTiket">0</span></div>
+    </div>
+    <div class="qr-section">
+      <div class="qr-frame">
+        <img src="eticket.png" alt="E-Tiket QR Code">
+        <div class="qr-lock-overlay"><i class="fa-solid fa-lock"></i><span>Terkunci</span></div>
+      </div>
+      <div style="font-family: 'Playfair Display', serif; font-weight: 700; color: var(--charcoal);">E-Tiket Belum Aktif</div>
+      <div style="font-size: 11px; color: var(--warning-dark); margin-top: 4px;">QR akan aktif setelah pembayaran berhasil</div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom">
+  <div class="bottom-row">
+    <a href="index.html" class="btn btn-secondary"><i class="fa-solid fa-house"></i> Beranda</a>
+    <a href="index.html#ticket" class="btn btn-primary"><i class="fa-solid fa-rotate"></i> Bayar Ulang</a>
+  </div>
+</div>
+
+<script>
+  var order = JSON.parse(localStorage.getItem('localfest_order') || '{}');
+  var orderId = localStorage.getItem('orderId') || 'LFEST-UNKNOWN';
+  if (!order.cart) { order = { nama: 'Guest', cart: { items: [{ jenis: 'Tiket Reguler' }], totalQty: 1 } }; }
+  document.getElementById('orderId').textContent = orderId;
+  document.getElementById('namaPemesan').textContent = order.nama || '-';
+  document.getElementById('jenisTiket').textContent = (order.cart.items || []).map(function(i) { return i.jenis; }).join(', ') || '-';
+  document.getElementById('jumlahTiket').textContent = order.cart.totalQty + ' Tiket';
+</script>
+</body>
+</html>
