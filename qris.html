@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Localfest Makassar 2026 — QRIS Pembayaran</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<style>
+  :root {
+    --wine-900: #2A0608; --wine-800: #4A0E12; --wine-700: #6B1414;
+    --gold-500: #C9A961; --gold-400: #D4AF37; --gold-300: #E4C77A;
+    --cream: #FAF6F0; --ivory: #FFFBF3; --charcoal: #1A1413;
+    --gray-700: #4A3F3D; --gray-500: #7A6E6B; --gray-300: #D6CFC9; --gray-100: #F0EBE4;
+    --white: #FFFFFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--charcoal); min-height: 100vh; padding: 20px; padding-bottom: 60px; -webkit-font-smoothing: antialiased; opacity: 0; transition: opacity 0.5s ease; }
+  body.no-scroll { overflow: hidden !important; }
+  
+  .topbar { max-width: 800px; margin: 0 auto 30px; display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(201, 169, 97, 0.2); }
+  .navbar-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .navbar-logo img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+  .navbar-logo-text { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--wine-700); }
+  .navbar-logo-text span { color: var(--gold-500); }
+  .step-indicator { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-500); }
+  .step-num { width: 22px; height: 22px; background: var(--gray-300); color: var(--white); border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step-indicator.active .step-num { background: var(--wine-700); }
+
+  .container { max-width: 800px; margin: 0 auto; }
+  .card { background: var(--white); border-radius: 16px; padding: 32px; border: 1px solid rgba(201, 169, 97, 0.15); box-shadow: 0 4px 12px rgba(42, 6, 8, 0.08); margin-bottom: 24px; animation: fadeUp 0.6s ease backwards; }
+  .card:nth-child(2) { animation-delay: 0.1s; } .card:nth-child(3) { animation-delay: 0.2s; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; gap: 20px; }
+  .order-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray-500); margin-bottom: 6px; }
+  .order-id { color: var(--wine-700); font-weight: 800; font-size: 14px; letter-spacing: 0.5px; background: rgba(107, 20, 20, 0.05); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(107, 20, 20, 0.1); display: inline-block; }
+  .total-block { text-align: right; }
+  .total-price { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 800; color: var(--wine-800); }
+  
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--gray-100); }
+  .detail-item { font-size: 12px; color: var(--gray-500); text-transform: uppercase; }
+  .detail-item span { display: block; color: var(--charcoal); font-weight: 600; font-size: 15px; margin-top: 4px; text-transform: none; }
+
+  .timer-box { text-align: center; padding: 20px; border-radius: 12px; background: linear-gradient(135deg, #FFF8E1, #FFF3E0); border: 1px solid #FFE0B2; margin-bottom: 32px; }
+  .timer-label { font-size: 12px; font-weight: 600; color: #B45309; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1.5px; }
+  .timer { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 800; color: #B45309; letter-spacing: 2px; }
+
+  .qr-card { text-align: center; }
+  .qr-wrap { display: inline-block; background: var(--white); padding: 24px; border-radius: 16px; box-shadow: 0 10px 30px rgba(42, 6, 8, 0.12); border: 1px solid var(--gray-100); position: relative; width: 360px; max-width: 100%; }
+  .qr-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold-400), var(--gold-500)); color: var(--wine-900); font-size: 11px; font-weight: 800; padding: 6px 20px; border-radius: 50px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(201, 169, 97, 0.4); z-index: 10; }
+  .qr-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px dashed var(--gray-300); text-align: left; }
+  .merchant { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--wine-800); font-size: 15px; font-family: 'Playfair Display', serif; }
+  .qr-img-box { background: var(--white); padding: 16px; border: 1px solid var(--gray-100); border-radius: 12px; display: flex; justify-content: center; align-items: center; }
+  .qr-img-box img { width: 100%; max-width: 260px; height: auto; display: block; }
+
+  .upload-area { border: 2px dashed var(--gray-300); border-radius: 12px; padding: 36px 20px; text-align: center; cursor: pointer; background: var(--cream); transition: all 0.3s ease; display: block; }
+  .upload-area:hover { border-color: var(--gold-500); background: var(--white); }
+  .upload-icon { font-size: 42px; margin-bottom: 12px; display: block; color: var(--gold-500); }
+  .upload-area h2 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 6px; color: var(--wine-800); }
+  .preview { display: none; margin-top: 20px; padding: 20px; border-radius: 12px; background: var(--white); border: 1px solid var(--gray-100); }
+  .preview img { width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; }
+  
+  .checkbox-wrap { margin-top: 24px; display: flex; gap: 12px; align-items: flex-start; background: var(--cream); padding: 16px; border-radius: 12px; border: 1px solid var(--gray-100); }
+  .submit-btn { width: 100%; padding: 18px; border: none; border-radius: 50px; font-weight: 800; font-size: 14px; cursor: pointer; background: linear-gradient(135deg, var(--gold-400), var(--gold-500)); color: var(--wine-900); text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 20px rgba(201, 169, 97, 0.4); }
+  .submit-btn:disabled { background: var(--gray-300); color: var(--gray-500); cursor: not-allowed; box-shadow: none; }
+
+  .loading-overlay { visibility: hidden; opacity: 0; position: fixed; inset: 0; background: rgba(42, 6, 8, 0.96); backdrop-filter: blur(10px); z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 20px; transition: opacity 0.4s ease; }
+  .loading-overlay.active { visibility: visible; opacity: 1; }
+  .loading-content { text-align: center; max-width: 440px; width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(201, 169, 97, 0.2); padding: 40px 30px; border-radius: 20px; }
+  .spinner { width: 50px; height: 50px; border: 4px solid rgba(201, 169, 97, 0.2); border-top-color: var(--gold-500); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: var(--ivory); }
+
+  @media (max-width: 600px) { .order-header { flex-direction: column; } .detail-grid { grid-template-columns: 1fr; } .step-indicator { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="navbar-logo"><img src="logo.png" alt="Localfest Logo"><span class="navbar-logo-text">LOCAL<span>FEST</span></span></a>
+  <div class="step-indicator active"><div class="step-num">1</div> Data <div class="step-num">2</div> Pembayaran <div class="step-num">3</div> E-Tiket</div>
+</div>
+
+<div class="container">
+  <div class="card">
+    <div class="order-header">
+      <div><div class="order-label">Order ID</div><div id="orderId" class="order-id">-</div></div>
+      <div class="total-block"><div class="order-label">Total Pembayaran</div><div id="total" class="total-price">Rp 0</div></div>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-item">Kategori Tiket<span id="jenisTiket">-</span></div>
+      <div class="detail-item">Jumlah Tiket<span id="jumlahTiket">0</span></div>
+      <div class="detail-item">Nama Pemesan<span id="namaPemesan">-</span></div>
+      <div class="detail-item">WhatsApp<span id="waPemesan">-</span></div>
+    </div>
+  </div>
+
+  <div class="card qr-card">
+    <div class="timer-box"><div class="timer-label">Selesaikan pembayaran dalam</div><div id="timer" class="timer">03:00</div></div>
+    <div class="qr-wrap">
+      <div class="qr-badge">Scan QRIS</div>
+      <div class="qr-header"><div class="merchant"><i class="fa-solid fa-store"></i> LOCALEST MAKASSAR</div><div style="font-size: 10px; color: var(--gray-500);">NMID: ID2024056789012</div></div>
+      <div class="qr-img-box"><img src="qris.png" alt="QRIS" id="qrisImg"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label for="file"><div class="upload-area"><span class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></span><h2>Upload Bukti Pembayaran</h2><p>Klik area ini untuk memilih bukti transfer QRIS</p></div></label>
+    <input id="file" hidden type="file" accept="image/*">
+    <div id="preview" class="preview"><img id="previewImg" alt="Preview"><div style="margin-top: 10px; color: var(--wine-700); font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Bukti pembayaran berhasil dipilih</div></div>
+    <div class="checkbox-wrap"><input type="checkbox" id="cek"><label for="cek">Saya menyatakan telah melakukan pembayaran dan mengunggah bukti pembayaran yang valid.</label></div>
+    <button id="btn" class="submit-btn" disabled><i class="fa-solid fa-lock"></i> KONFIRMASI PEMBAYARAN</button>
+  </div>
+</div>
+
+<div id="loading" class="loading-overlay">
+  <div class="loading-content"><div class="spinner"></div><div class="loading-text">Memproses Pembayaran</div><div style="color: var(--gold-300); font-size: 13px; margin-top: 8px;">Mohon tunggu...</div></div>
+</div>
+
+<script>
+  function generateOrderId() { const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let r = ''; for (let i = 0; i < 6; i++) r += chars.charAt(Math.floor(Math.random() * chars.length)); return 'LFEST-MKS26-' + r; }
+  var order = JSON.parse(localStorage.getItem('localfest_order') || '{}');
+  if (!localStorage.getItem('orderId')) { localStorage.setItem('orderId', generateOrderId()); }
+  document.getElementById('orderId').textContent = localStorage.getItem('orderId');
+  if (!order.cart) { order = { nama: 'Guest', wa: '-', cart: { items: [{ jenis: 'Tiket Reguler', qty: 1, harga: 210000 }], totalQty: 1, totalPrice: 210000 } }; }
+  
+  var cart = order.cart;
+  document.getElementById('total').textContent = 'Rp ' + Number(cart.totalPrice || 0).toLocaleString('id-ID');
+  document.getElementById('jenisTiket').textContent = (cart.items || []).map(function(i) { return i.jenis; }).join(', ') || '-';
+  document.getElementById('jumlahTiket').textContent = cart.totalQty || 0;
+  document.getElementById('namaPemesan').textContent = order.nama || '-';
+  document.getElementById('waPemesan').textContent = order.wa || '-';
+
+  var duration = 180; var timerEl = document.getElementById('timer'); var timerInterval = null; var isProcessing = false;
+  function timerRun() {
+    if (isProcessing) return;
+    var m = Math.floor(duration / 60); var s = duration % 60;
+    timerEl.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    if (duration <= 0) { clearInterval(timerInterval); window.location.href = 'pending.html'; return; }
+    duration--;
+  }
+  timerRun(); timerInterval = setInterval(timerRun, 1000);
+
+  var uploaded = false; var fileInput = document.getElementById('file'); var cekInput = document.getElementById('cek'); var btn = document.getElementById('btn'); var previewImg = document.getElementById('previewImg');
+  function checkButton() { btn.disabled = !(uploaded && cekInput.checked); }
+  fileInput.addEventListener('change', function() {
+    if (this.files && this.files.length) {
+      uploaded = true; document.getElementById('preview').style.display = 'block';
+      previewImg.src = URL.createObjectURL(this.files[0]); checkButton();
+    }
+  });
+  cekInput.addEventListener('change', checkButton);
+
+  var loadingOverlay = document.getElementById('loading');
+  btn.addEventListener('click', function() {
+    if (btn.disabled) return;
+    isProcessing = true; clearInterval(timerInterval);
+    loadingOverlay.classList.add('active'); document.body.classList.add('no-scroll');
+    setTimeout(function() { window.location.href = 'success.html'; }, 2000); // Redirect to success
+  });
+
+  window.addEventListener('load', function() { document.body.style.opacity = '1'; });
+</script>
+</body>
+</html>
