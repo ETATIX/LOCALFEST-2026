@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Localfest Makassar 2026 — Form Pemesanan</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<style>
+  :root {
+    --wine-900: #2A0608; --wine-800: #4A0E12; --wine-700: #6B1414;
+    --gold-500: #C9A961; --gold-400: #D4AF37; --gold-300: #E4C77A;
+    --cream: #FAF6F0; --ivory: #FFFBF3; --charcoal: #1A1413;
+    --gray-500: #7A6E6B; --gray-300: #D6CFC9; --gray-100: #F0EBE4;
+    --white: #FFFFFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--charcoal); padding-bottom: 120px; -webkit-font-smoothing: antialiased; line-height: 1.7; }
+  
+  .topbar { position: sticky; top: 0; z-index: 100; background: rgba(250, 246, 240, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(201, 169, 97, 0.3); }
+  .topbar-inner { max-width: 1200px; margin: 0 auto; padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; }
+  .navbar-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .navbar-logo img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+  .navbar-logo-text { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--wine-700); }
+  .navbar-logo-text span { color: var(--gold-500); }
+  .step-indicator { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-500); }
+  .step-num { width: 22px; height: 22px; background: var(--gray-300); color: var(--white); border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step-indicator.active .step-num { background: var(--wine-700); }
+
+  .main-container { max-width: 1200px; margin: 40px auto 0; padding: 0 30px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; }
+  .page-header h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--wine-800); margin-bottom: 6px; }
+  .page-header p { color: var(--gray-500); font-size: 14px; margin-bottom: 20px; }
+  
+  .card { background: var(--white); border-radius: 16px; padding: 30px; border: 1px solid rgba(201, 169, 97, 0.15); box-shadow: 0 4px 12px rgba(42, 6, 8, 0.08); margin-bottom: 24px; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; color: var(--wine-800); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+  .card-title i { color: var(--gold-500); background: rgba(201, 169, 97, 0.1); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 14px; }
+  
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group.full { grid-column: span 2; }
+  label { font-size: 13px; font-weight: 600; color: var(--gray-500); margin-bottom: 8px; }
+  .input-wrap { position: relative; }
+  .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-500); font-size: 13px; pointer-events: none; }
+  input, select, textarea { width: 100%; padding: 12px 16px 12px 40px; border-radius: 10px; border: 1.5px solid var(--gray-100); background: var(--cream); font-family: 'Inter', sans-serif; font-size: 14px; color: var(--charcoal); transition: all 0.3s ease; }
+  textarea { min-height: 90px; resize: vertical; padding-left: 16px; padding-top: 14px; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold-500); background: var(--white); box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15); }
+  input.error { border-color: #EF4444; background: #FFF0F0; animation: shake 0.4s; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+  .check { display: flex; gap: 12px; margin-top: 8px; align-items: flex-start; background: var(--cream); padding: 16px; border-radius: 10px; border: 1px solid var(--gray-100); margin-bottom: 10px; }
+  .check input { width: 18px; height: 18px; min-width: 18px; accent-color: var(--wine-700); cursor: pointer; margin-top: 3px; }
+  .check label { font-size: 13px; color: var(--gray-500); cursor: pointer; line-height: 1.5; margin: 0; }
+
+  .summary-wrapper { position: sticky; top: 100px; height: fit-content; }
+  .summary-card { background: linear-gradient(160deg, var(--wine-900) 0%, var(--wine-700) 100%); color: var(--ivory); border-radius: 16px; padding: 0; border: 1px solid rgba(201, 169, 97, 0.2); box-shadow: 0 20px 60px rgba(42, 6, 8, 0.18); overflow: hidden; }
+  .summary-header { padding: 24px 28px; border-bottom: 1px solid rgba(201, 169, 97, 0.2); }
+  .summary-header h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--gold-300); margin-bottom: 6px; }
+  .summary-header p { font-size: 12px; color: rgba(255, 251, 243, 0.6); letter-spacing: 1px; text-transform: uppercase; }
+  .summary-body { padding: 28px; }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 14px; }
+  .summary-row span { color: rgba(255, 251, 243, 0.7); }
+  .summary-row strong { color: var(--ivory); font-weight: 600; }
+  .summary-divider { height: 1px; background: rgba(201, 169, 97, 0.2); margin: 20px 0; }
+  .summary-total { display: flex; justify-content: space-between; align-items: center; }
+  .summary-total span { font-size: 14px; color: rgba(255, 251, 243, 0.8); text-transform: uppercase; letter-spacing: 1px; }
+  .summary-total strong { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: var(--gold-400); }
+
+  .bottom-bar { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); padding: 14px 30px; box-shadow: 0 -4px 20px rgba(42, 6, 8, 0.08); border-top: 1px solid rgba(201, 169, 97, 0.2); z-index: 90; }
+  .bottom-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: flex-end; }
+  .btn-pay { padding: 16px 40px; background: linear-gradient(135deg, var(--gold-400), var(--gold-500)); color: var(--wine-900); border: none; border-radius: 50px; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 8px 20px rgba(201, 169, 97, 0.4); transition: all 0.3s ease; }
+  .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(201, 169, 97, 0.6); }
+  .btn-pay:disabled { background: var(--gray-300); color: var(--gray-500); cursor: not-allowed; box-shadow: none; }
+
+  .loading-overlay { visibility: hidden; opacity: 0; position: fixed; inset: 0; background: rgba(42, 6, 8, 0.85); backdrop-filter: blur(8px); z-index: 99999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.3s ease; }
+  .loading-overlay.active { visibility: visible; opacity: 1; }
+  .spinner-box { width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: var(--wine-900); border: 1px solid rgba(201, 169, 97, 0.3); margin-bottom: 20px; }
+  .spinner { width: 35px; height: 35px; border: 4px solid rgba(201, 169, 97, 0.2); border-top-color: var(--gold-500); border-radius: 50%; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: var(--ivory); }
+  .loading-sub { font-size: 13px; color: var(--gold-300); margin-top: 8px; letter-spacing: 1px; }
+
+  @media (max-width: 900px) { .main-container { grid-template-columns: 1fr; } .summary-wrapper { position: static; margin-bottom: 24px; } .step-indicator { display: none; } }
+  @media (max-width: 600px) { .main-container { padding: 0 16px; margin-top: 20px; } .form-grid { grid-template-columns: 1fr; } .form-group.full { grid-column: span 1; } .bottom-inner { justify-content: center; } .btn-pay { width: 100%; padding: 14px 20px; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="navbar-logo">
+      <img src="logo.png" alt="Localfest Logo">
+      <span class="navbar-logo-text">LOCAL<span>FEST</span></span>
+    </a>
+    <div class="step-indicator active">
+      <div class="step-num">1</div> Data Pemesan <div class="step-num" style="margin-left:10px;">2</div> Pembayaran <div class="step-num" style="margin-left:10px;">3</div> E-Tiket
+    </div>
+  </div>
+</div>
+
+<div class="main-container">
+  <div class="form-column">
+    <div class="page-header">
+      <h1>Form Pemesanan Tiket</h1>
+      <p>Lengkapi data di bawah ini untuk melanjutkan ke metode pembayaran.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="fa-solid fa-user-pen"></i> Data Pemesan</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Nama Lengkap (sesuai identitas)</label>
+          <div class="input-wrap"><i class="fa-solid fa-user input-icon"></i><input id="nama" type="text" placeholder="Masukkan nama lengkap"></div>
+        </div>
+        <div class="form-group">
+          <label>Jenis Identitas</label>
+          <div class="input-wrap"><i class="fa-solid fa-id-card input-icon"></i>
+            <select id="identitas"><option value="">Pilih Identitas</option><option>KTP</option><option>SIM</option><option>Paspor</option></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Nomor Identitas</label>
+          <div class="input-wrap"><i class="fa-solid fa-hashtag input-icon"></i><input id="nomorId" type="text" placeholder="Nomor identitas"></div>
+        </div>
+        <div class="form-group">
+          <label>E-mail Aktif</label>
+          <div class="input-wrap"><i class="fa-solid fa-envelope input-icon"></i><input id="email" type="email" placeholder="contoh@email.com"></div>
+        </div>
+        <div class="form-group">
+          <label>No. WhatsApp Aktif</label>
+          <div class="input-wrap"><i class="fa-solid fa-phone input-icon"></i><input id="wa" type="tel" placeholder="08xxxxxxxxxx"></div>
+        </div>
+        <div class="form-group full">
+          <label>Alamat / Tempat Tinggal</label>
+          <div class="input-wrap"><textarea id="alamat" placeholder="Masukkan alamat lengkap"></textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="fa-solid fa-shield-halved"></i> Persetujuan</div>
+      <div class="check"><input type="checkbox" id="setuju1"><label for="setuju1">Data yang saya isi adalah benar dan dapat dipertanggungjawabkan secara hukum.</label></div>
+      <div class="check"><input type="checkbox" id="setuju2"><label for="setuju2">Saya menyetujui syarat dan ketentuan acara Localfest Makassar 2026.</label></div>
+    </div>
+  </div>
+
+  <div class="summary-wrapper">
+    <div class="summary-card">
+      <div class="summary-header"><h3>Ringkasan Pesanan</h3><p>Localfest Makassar 2026</p></div>
+      <div class="summary-body">
+        <div class="summary-row"><span>Jenis Tiket</span><strong id="jenisTiket">-</strong></div>
+        <div class="summary-row"><span>Jumlah Tiket</span><strong id="jumlahTiket">0 Tiket</strong></div>
+        <div class="summary-row"><span>Tanggal Acara</span><strong>4 Oktober 2026</strong></div>
+        <div id="detailTiket"></div>
+        <div class="summary-total"><span>Total Bayar</span><strong id="totalBayar">Rp 0</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <div class="bottom-inner">
+    <button class="btn-pay" id="lanjut"><i class="fa-solid fa-lock"></i> LANJUT KE PEMBAYARAN</button>
+  </div>
+</div>
+
+<div id="loading" class="loading-overlay">
+  <div class="spinner-box"><div class="spinner"></div></div>
+  <div class="loading-text">Memproses Pesanan Anda</div>
+  <div class="loading-sub">Mohon tunggu sebentar...</div>
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const qty = parseInt(urlParams.get('qty') || '1');
+  const total = parseInt(urlParams.get('total') || '210000');
+  const namaTiket = decodeURIComponent(urlParams.get('nama') || 'Tiket Reguler');
+  const harga = parseInt(urlParams.get('harga') || '210000');
+
+  const namaEl = document.getElementById('nama');
+  const identitasEl = document.getElementById('identitas');
+  const nomorIdEl = document.getElementById('nomorId');
+  const emailEl = document.getElementById('email');
+  const waEl = document.getElementById('wa');
+  const alamatEl = document.getElementById('alamat');
+  const setuju1El = document.getElementById('setuju1');
+  const setuju2El = document.getElementById('setuju2');
+  const loadingEl = document.getElementById('loading');
+  const lanjutBtn = document.getElementById('lanjut');
+
+  document.getElementById('totalBayar').innerText = 'Rp ' + total.toLocaleString('id-ID');
+  document.getElementById('jumlahTiket').innerText = qty + ' Tiket';
+  document.getElementById('detailTiket').innerHTML = `<div class="summary-divider"></div><div class="summary-row"><span>${namaTiket} (${qty}x)</span><strong>Rp ${(qty * harga).toLocaleString('id-ID')}</strong></div>`;
+  document.getElementById('jenisTiket').innerText = namaTiket;
+
+  lanjutBtn.onclick = function() {
+    const wajib = [namaEl, identitasEl, nomorIdEl, emailEl, waEl, alamatEl];
+    let isValid = true;
+    wajib.forEach(field => field.classList.remove('error'));
+    for (const field of wajib) { if (!field.value.trim()) { field.classList.add('error'); isValid = false; } }
+    if (!isValid) { alert('Mohon lengkapi semua data wajib (berwarna merah).'); return; }
+    if (!setuju1El.checked || !setuju2El.checked) { alert('Harap centang seluruh kotak persetujuan untuk melanjutkan.'); return; }
+
+    loadingEl.classList.add('active');
+    lanjutBtn.disabled = true;
+    lanjutBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> MEMPROSES...';
+
+    localStorage.setItem('localfest_order', JSON.stringify({
+      nama: namaEl.value, wa: waEl.value, email: emailEl.value,
+      cart: { items: [{ jenis: namaTiket, qty: qty, harga: harga }], totalQty: qty, totalPrice: total }
+    }));
+
+    const qrisParams = new URLSearchParams({ nama: namaEl.value, wa: waEl.value, jenis: namaTiket, qty: qty, total: total });
+    setTimeout(() => { window.location.href = 'qris.html?' + qrisParams.toString(); }, 1500);
+  };
+</script>
+</body>
+</html>
